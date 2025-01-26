@@ -5,6 +5,7 @@ from sqlalchemy.future import select
 from datetime import date, timedelta
 from src.database.models import Contact
 from src.schemas.contacts import ContactBase, ContactResponse
+from src.database.models import User
 from typing import List, Optional
 
 class ContactService:
@@ -18,26 +19,28 @@ class ContactService:
         query = select(Contact).offset(skip).limit(limit)
 
         if first_name:
-            query = query.filter(Contact.first_name.ilike(f"%{first_name}%"))
+            query = query.where(Contact.first_name.ilike(f"%{first_name}%"))
         if last_name:
-            query = query.filter(Contact.last_name.ilike(f"%{last_name}%"))
+            query = query.where(Contact.last_name.ilike(f"%{last_name}%"))
         if email:
-            query = query.filter(Contact.email.ilike(f"%{email}%"))
-
+            query = query.where(Contact.email.ilike(f"%{email}%"))
         result = await self.db.execute(query)
         contacts = result.scalars().all()
         return [ContactResponse.from_orm(contact) for contact in contacts]
 
     # Отримання контактів з днями народження на найближчі 7 днів
     async def get_upcoming_birthdays(self, days: int = 7) -> List[ContactResponse]:
-        upcoming_birthday_date = date.today() + timedelta(days=days)
-        query = select(Contact).filter(Contact.birthday <= upcoming_birthday_date)
-
+        today = date.today()
+        end_date = today + timedelta(days=days)
+        query = select(Contact).filter(
+        Contact.birthday.between(today, end_date)
+    )
         result = await self.db.execute(query)
         contacts = result.scalars().all()
         return [ContactResponse.from_orm(contact) for contact in contacts]
 
-    async def get_contacts(self, skip: int = 0, limit: int = 100) -> List[ContactResponse]:
+
+    async def get_contacts(self, user: User, skip: int = 0, limit: int = 100) -> List[ContactResponse]:
         query = select(Contact).offset(skip).limit(limit)
         result = await self.db.execute(query)
         contacts = result.scalars().all()

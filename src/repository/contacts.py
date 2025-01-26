@@ -6,13 +6,14 @@ from sqlalchemy.orm import selectinload
 
 from src.database.models import Contact
 from src.schemas.contacts import ContactBase
+from src.database.models import User
 
 class ContactRepository:
     def __init__(self, session: AsyncSession):
         self.db = session
 
-    async def get_contacts(self, skip: int, limit: int) -> List[Contact]:
-        stmt = select(Contact).offset(skip).limit(limit)
+    async def get_contacts(self, user: User, skip: int, limit: int) -> List[Contact]:
+        stmt = select(Contact).filter_by(user=user).offset(skip).limit(limit)
         contacts = await self.db.execute(stmt)
         return contacts.scalars().all()
 

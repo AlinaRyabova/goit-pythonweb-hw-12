@@ -8,6 +8,8 @@ from src.database.db import get_db
 from src.schemas.contacts import ContactBase, ContactResponse
 from src.services.contacts import ContactService
 from src.conf import messages
+from src.services.auth import get_current_user
+from src.database.models import User
 
 router = APIRouter(prefix="/contacts", tags=['contacts'])
 
@@ -19,10 +21,10 @@ async def read_contacts(
     first_name: Optional[str] = None,
     last_name: Optional[str] = None,
     email: Optional[str] = None,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user),
 ):
     contact_service = ContactService(db)
-    contacts = await contact_service.search_contacts(first_name, last_name, email, skip, limit)
+    contacts = await contact_service.search_contacts(first_name, last_name, email, skip, limit, user)
     if not contacts:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND

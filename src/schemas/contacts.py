@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 
 class ContactBase(BaseModel):
@@ -11,9 +11,14 @@ class ContactBase(BaseModel):
     additional_info: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-# Відповідь з id та датами
-class ContactResponse(ContactBase):
+class ContactResponse(BaseModel):
     id: int
+    first_name: str
+    last_name: str
+    email: str
+    created_at: datetime
 
+    class Config:
+        from_attributes = True
