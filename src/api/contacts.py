@@ -24,7 +24,7 @@ async def read_contacts(
     db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user),
 ):
     contact_service = ContactService(db)
-    contacts = await contact_service.search_contacts(first_name, last_name, email, skip, limit, user)
+    contacts = await contact_service.search_contacts(first_name, last_name, email, skip, limit)
     if not contacts:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.CONTACT_NOT_FOUND

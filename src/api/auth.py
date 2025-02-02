@@ -44,10 +44,28 @@ async def register_user(
 # Логін користувача
 @router.post("/login", response_model=Token)
 async def login_user(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     user_service = UserService(db)
     user = await user_service.get_user_by_username(form_data.username)
+    
+    
+    # Перевірка, чи існує користувач
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Неправильний логін або пароль",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+     # Перевірка, чи підтверджений email
+    if not user.confirmed:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Електронна адреса не підтверджена",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Перевірка пароля
     if not user or not Hash().verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

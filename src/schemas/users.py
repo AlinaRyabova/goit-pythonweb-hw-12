@@ -12,6 +12,8 @@ class User(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
+
 # Схема для запиту реєстрації
 class UserCreate(BaseModel):
     username: str
