@@ -19,3 +19,6 @@ build-backend = "poetry.core.masonry.api"
 pythonpath = "."
 filterwarnings = "ignore::DeprecationWarning"
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.poetry.group.dev.dependencies]
+sphinx = "^8.0.2"

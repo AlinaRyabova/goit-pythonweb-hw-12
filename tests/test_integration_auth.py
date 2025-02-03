@@ -72,3 +72,4 @@ def test_validation_error_login(client):
     data = response.json()
     assert "detail" in data
 
+

@@ -7,6 +7,7 @@ from pydantic import EmailStr
 from src.services.auth import create_email_token
 from src.conf.config import settings
 
+# Налаштування підключення до поштового сервера
 conf = ConnectionConfig(
     MAIL_USERNAME=settings.MAIL_USERNAME,
     MAIL_PASSWORD=settings.MAIL_PASSWORD,
@@ -22,6 +23,17 @@ conf = ConnectionConfig(
 )
 
 async def send_email(email: EmailStr, username: str, host: str):
+    """
+    Відправляє email для підтвердження реєстрації користувача.
+
+    Args:
+        email (EmailStr): Email-адреса одержувача.
+        username (str): Ім'я користувача для вставки в лист.
+        host (str): Доменне ім'я або IP-адреса сервера для формування посилання на підтвердження.
+
+    Raises:
+        ConnectionErrors: Якщо виникає помилка підключення до SMTP-сервера.
+    """
     try:
         token_verification = create_email_token({"sub": email})
         message = MessageSchema(
