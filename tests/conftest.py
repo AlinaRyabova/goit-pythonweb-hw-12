@@ -5,7 +5,7 @@ import pytest_asyncio
 from fastapi.testclient import TestClient
 from sqlalchemy.pool import StaticPool
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-
+from unittest.mock import MagicMock
 from main import app
 from src.database.models import Base, User, Contact
 from src.database.db import get_db
@@ -78,3 +78,16 @@ async def db():
         except Exception as err:
             await session.rollback()
             raise
+
+
+@pytest.fixture
+def mock_db():
+    db = MagicMock(AsyncSession)
+    db.execute.return_value.scalar_one_or_none.return_value = 1 
+    return db        
+
+@pytest.fixture
+def mock_db_not_configured():
+    db = MagicMock()
+    db.execute.return_value.scalar_one_or_none.return_value = None  
+    return db

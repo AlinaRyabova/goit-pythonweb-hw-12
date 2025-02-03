@@ -31,3 +31,10 @@ class UserService:
     async def confirmed_email(self, email: str) -> None:
         return await self.repository.confirmed_email(email)
 
+    async def update_avatar(self, user_id: int, avatar_url: str):
+        user = await self.repository.get_user_by_id(user_id)
+        if user:
+            user.avatar = avatar_url
+            await self.repository.update_user(user)
+            return user
+        return None
