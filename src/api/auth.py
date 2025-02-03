@@ -8,7 +8,7 @@ from src.database.db import get_db
 from src.schemas.users import RequestEmail
 from fastapi import BackgroundTasks, Request
 from src.services.email import send_email
-from src.services.cache import get_current_user
+
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -159,6 +159,3 @@ async def request_email(
     return {"message": "Перевірте свою електронну пошту для підтвердження"}
 
 
-@router.get("/me", response_model=User)
-async def read_user_me(current_user: User = Depends(get_current_user)):
-    return current_user

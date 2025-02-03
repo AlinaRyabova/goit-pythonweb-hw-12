@@ -1,6 +1,6 @@
-import aioredis
+import redis.asyncio as redis
 from fastapi import Depends
-from src.conf import settings
+from src.conf.config import settings
 
 # Підключення до Redis
 async def get_redis_client():
